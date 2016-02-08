@@ -13,7 +13,7 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
 
   val textBox = new ListView[String]() {
     listData = List.empty[String]
-    preferredSize = new Dimension(width,height-100)
+    preferredSize = new Dimension(width, height - 100)
   }
 
 
@@ -43,26 +43,32 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
   }
 
 
-
-  val frame = new MainFrame {
-    this.preferredSize = new Dimension(width,height)
-    this.title = DirectoryWindow.this.title
+  val scanButton = new Button("Scan Directories") {
+    reactions += {
+      case ButtonClicked(_) => {
+        println("scanning")
+      }
+    }
   }
 
+  val frame = new MainFrame {
+    this.preferredSize = new Dimension(width, height)
+    this.title = DirectoryWindow.this.title
+  }
 
   def setup = {
     val panel = new FlowPanel() {
       contents += textBox
       contents += dirButton
       contents += delDir
+      contents += scanButton
     }
     this.frame.contents = panel
   }
 
-
-    def refreshViews (): Unit = {
-      textBox.listData = directories
-    }
+  def refreshViews(): Unit = {
+    textBox.listData = directories
+  }
 
 
 }
