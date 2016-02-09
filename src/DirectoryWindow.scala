@@ -9,11 +9,15 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
 
   def deleteDirectory(): Unit = ???
 
-  var directories: List[String] = List()
+  //  var directories: List[String] = List()
 
-  val textBox = new ListView[String]() {
-    listData = List.empty[String]
-    preferredSize = new Dimension(width - 40, height - 100)
+  var textBox = newListView(List.empty[String])
+
+    def newListView(data: Seq[String]) = {
+      new ListView[String]() {
+        listData = data
+        preferredSize = new Dimension(width - 40, height - 100)
+      }
   }
 
 
@@ -25,12 +29,17 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
     reactions += {
       case ButtonClicked(_) =>
 
-        if( textBox.selection.items.isEmpty ) {
+        if (textBox.selection.items.isEmpty) {
           Dialog.showMessage(message = "You haven't selected a directory to remove from the list")
-        } else if( textBox.selection.items.nonEmpty  ) {
-          textBox.selection.items.foreach { filePath =>
-//            directories.dropWhile(items)
-            
+        } else if (textBox.selection.items.nonEmpty) {
+          println(s"delete ${textBox.selection.items}")
+          textBox.selection.items.foreach { item =>
+            textBox.listData = textBox.listData.filter({
+              !_.equals(item)
+            })
+            textBox = newListView(textBox.listData)
+
+            refreshViews()
           }
         }
     }
@@ -44,7 +53,9 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
         // do check if they click cancel on selecting a file.
 
         if (fileDialog.selectedFiles.nonEmpty) {
-          directories = directories ++ fileDialog.selectedFiles.map {_.getPath()}
+          textBox.listData = textBox.listData ++ fileDialog.selectedFiles.map {
+            _.getPath()
+          }
           refreshViews()
         }
       }
@@ -55,7 +66,8 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
   val scanButton = new Button("Scan Directories") {
     reactions += {
       case ButtonClicked(_) => {
-        println("scanning")
+        val scan = new Scan(textBox.listData, recursively = false)
+        scan.execute()
       }
     }
   }
@@ -66,6 +78,10 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
   }
 
   def setup = {
+    refreshViews()
+  }
+
+  def refreshViews(): Unit = {
     val panel = new FlowPanel() {
       contents += textBox
       contents += dirButton
@@ -73,10 +89,6 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
       contents += scanButton
     }
     this.frame.contents = panel
-  }
-
-  def refreshViews(): Unit = {
-    textBox.listData = directories
   }
 
 
