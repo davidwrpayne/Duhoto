@@ -13,17 +13,26 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
 
   val textBox = new ListView[String]() {
     listData = List.empty[String]
-    preferredSize = new Dimension(width, height - 100)
+    preferredSize = new Dimension(width - 40, height - 100)
   }
 
 
   val fileDialog = new FileChooser()
   fileDialog.fileSelectionMode = SelectionMode.DirectoriesOnly
+  fileDialog.multiSelectionEnabled = true
 
   val delDir = new Button("Remove Directory from scan") {
     reactions += {
       case ButtonClicked(_) =>
 
+        if( textBox.selection.items.isEmpty ) {
+          Dialog.showMessage(message = "You haven't selected a directory to remove from the list")
+        } else if( textBox.selection.items.nonEmpty  ) {
+          textBox.selection.items.foreach { filePath =>
+//            directories.dropWhile(items)
+            
+          }
+        }
     }
   }
 
@@ -33,11 +42,11 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
       case ButtonClicked(_) => {
         fileDialog.showOpenDialog(new Component {})
         // do check if they click cancel on selecting a file.
-        if (fileDialog.selectedFile != null) {
-          directories = directories ++ (List(fileDialog.selectedFile.getPath))
+
+        if (fileDialog.selectedFiles.nonEmpty) {
+          directories = directories ++ fileDialog.selectedFiles.map {_.getPath()}
           refreshViews()
         }
-        println(directories.toString())
       }
     }
   }
