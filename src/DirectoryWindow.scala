@@ -20,6 +20,7 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
       }
   }
 
+  val recursiveCheckBox = new CheckBox("Recursively search directories")
 
   val fileDialog = new FileChooser()
   fileDialog.fileSelectionMode = SelectionMode.DirectoriesOnly
@@ -66,8 +67,10 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
   val scanButton = new Button("Scan Directories") {
     reactions += {
       case ButtonClicked(_) => {
-        val scan = new Scan(textBox.listData, recursively = false)
-        scan.execute()
+        val recurse = recursiveCheckBox.selected
+        val scan = new Scan(textBox.listData, recursively = recurse)
+        val matches = scan.execute()
+        val matchWindow = new MatchWindow(matches)
       }
     }
   }
@@ -87,6 +90,7 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
       contents += dirButton
       contents += delDir
       contents += scanButton
+      contents += recursiveCheckBox
     }
     this.frame.contents = panel
   }
