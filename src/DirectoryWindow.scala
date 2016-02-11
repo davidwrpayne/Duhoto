@@ -71,6 +71,7 @@ class DirectoryWindow(title: String, width: Int, height: Int) {
         val scan = new Scan(textBox.listData, recursively = recurse)
         val matches = scan.execute()
         val matchWindow = new MatchWindow(matches)
+
       }
     }
   }
